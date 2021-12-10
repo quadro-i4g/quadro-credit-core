@@ -1,0 +1,45 @@
+{
+  "name": "quadro-credit-core",
+  "author": "quadro-i4g",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/quadro-i4g/quadro-credit-core"
+  },
+  "bugs": {
+    "url": "https://github.com/quadro-i4g/quadro-credit-core/issues"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "concurrently": "^6.4.0",
+    "eslint": "^8.4.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-important-stuff": "^1.1.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.3",
+    "husky": ">=6",
+    "lerna": "^4.0.0",
+    "lint-staged": ">=10",
+    "prettier": "^2.5.1",
+    "rimraf": "^3.0.2"
+  },
+  "peerDependencies": {},
+  "scripts": {
+    "start": "lerna run start --parallel",
+    "dev": "lerna run dev --parallel",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "concurrently yarn:lint:*",
+    "lint:js": "eslint '**/*.+(js|jsx|ts|tsx)'",
+    "build": "concurrently --kill-others-on-fail -m 1 \"yarn run clean\" \"lerna run build\"",
+    "clean": "yarn clean:build",
+    "clean:build": "rimraf './dist'",
+    "clean-fresh": "rimraf './node_modules' && lerna clean",
+    "postinstall": "lerna bootstrap",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "**.+(js|jsx|ts|tsx)": [
+      "eslint --fix"
+    ]
+  }
+}
