@@ -4,4 +4,4 @@ module.exports = router => {
   router.use('/auth', authRouter);
 
   return router;
-}
+};

@@ -8,7 +8,9 @@ class AppError extends Error {
     this.isOperational = true;
     this.date = new Date();
 
-    if (Error.captureStackTrace) Error.captureStackTrace(this, this.constructor);
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor);
+    }
   }
 }
 
@@ -31,7 +33,10 @@ class InternalServerError extends AppError {
 }
 
 class BadGatewayError extends AppError {
-  constructor(message = 'The server encountered a temporary error & could not complete your request', statusCode = 502) {
+  constructor(
+    message = 'The server encountered a temporary error & could not complete your request',
+    statusCode = 502,
+  ) {
     super(message, statusCode);
   }
 }
@@ -82,5 +87,5 @@ module.exports = {
   ExpectationFailedError,
   NotFoundError,
   InvalidError,
-  DuplicateError
-}
+  DuplicateError,
+};

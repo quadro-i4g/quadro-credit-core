@@ -1,10 +1,18 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable consistent-return */
 const crypto = require('crypto');
-const { BadRequestError, UnAuthorizedError, NotFoundError, InternalServerError } = require('../utils/appError');
+const {
+  BadRequestError,
+  UnAuthorizedError,
+  NotFoundError,
+  InternalServerError,
+} = require('../utils/appError');
 const sendEmail = require('../utils/sendEmail');
 const User = require('../models/User');
-const { validateRegisterData, validateLoginData } = require('../utils/validators')
+const {
+  validateRegisterData,
+  validateLoginData,
+} = require('../utils/validators');
 
 /**
  * @desc    Register user
@@ -27,8 +35,7 @@ exports.register = async (req, res, next) => {
   // })
 
   return sendTokenCookieResponse(user, 200, res);
-}
-
+};
 
 /**
  * @desc    Log user in
@@ -39,7 +46,9 @@ exports.login = async (req, res, next) => {
   const { email, password } = validateLoginData(req.body);
 
   if (!email || !password) {
-    return next(new BadRequestError('Please enter an email address & a password'))
+    return next(
+      new BadRequestError('Please enter an email address & a password'),
+    );
   }
 
   const user = await User.findOne({ email }).select('+password');
@@ -50,8 +59,7 @@ exports.login = async (req, res, next) => {
   if (!isMatch) return next(new UnAuthorizedError('Invalid credentials'), 401);
 
   sendTokenCookieResponse(user, 200, res);
-}
-
+};
 
 /**
  * @desc    Log user out / Clear token cookie
@@ -61,12 +69,11 @@ exports.login = async (req, res, next) => {
 exports.logout = async (req, res, next) => {
   res.cookie('token', 'none', {
     expires: new Date(Date.now()),
-    httpOnly: true
-  })
+    httpOnly: true,
+  });
 
   res.status(200).json({ success: true, data: {} });
-}
-
+};
 
 /**
  * @desc    Get current logged in user
@@ -74,11 +81,10 @@ exports.logout = async (req, res, next) => {
  * @access  Private
  */
 exports.currentUser = async (req, res, next) => {
-  const user =  await User.findById(req.user._id);
+  const user = await User.findById(req.user._id);
 
   res.status(200).json({ success: true, data: user });
-}
-
+};
 
 /**
  * @desc    Get password reset token
@@ -86,17 +92,20 @@ exports.currentUser = async (req, res, next) => {
  * @access  Public
  */
 exports.forgotPassword = async (req, res, next) => {
-  const user =  await User.findOne({ email: req.body.email });
+  const user = await User.findOne({ email: req.body.email });
 
-  if (!user) return next(new NotFoundError('No user found with that email', 404));
-
+  if (!user) {
+    return next(new NotFoundError('No user found with that email', 404));
+  }
   // Get reset token
   const resetToken = user.getResetPasswordToken();
 
   await user.save({ validateBeforeSave: false });
 
   // Create reset URL
-  const resetURL = `${req.protocol}://${req.get('host')}/api/v1/auth/reset/${resetToken}`;
+  const resetURL = `${req.protocol}://${req.get(
+    'host',
+  )}/api/v1/auth/reset/${resetToken}`;
 
   try {
     // await sendEmail({
@@ -114,12 +123,13 @@ exports.forgotPassword = async (req, res, next) => {
     user.resetPasswordExpiration = undefined;
     await user.save({ validateBeforeSave: false });
 
-    return next(new InternalServerError('Reset token email could not be sent', 500))
+    return next(
+      new InternalServerError('Reset token email could not be sent', 500),
+    );
   }
 
   res.status(200).json({ success: true, data: user });
-}
-
+};
 
 /**
  * @desc    Reset password
@@ -128,15 +138,18 @@ exports.forgotPassword = async (req, res, next) => {
  */
 exports.resetPassword = async (req, res, next) => {
   // Get hashed token
-  const resetPasswordToken = crypto.createHash('sha256').update(req.params.resetToken).digest('hex');
+  const resetPasswordToken = crypto
+    .createHash('sha256')
+    .update(req.params.resetToken)
+    .digest('hex');
 
-  const user =  await User.findOne({
+  const user = await User.findOne({
     resetPasswordToken,
     // eslint-disable-next-line no-dupe-keys
-    resetPasswordToken: { $gt: Date.now() }
-  })
+    resetPasswordToken: { $gt: Date.now() },
+  });
 
-  if (!user) return next(new BadRequestError('Oops! Invalid token :(', 400))
+  if (!user) return next(new BadRequestError('Oops! Invalid token :(', 400));
 
   // Set new password
   user.password = req.body.password;
@@ -145,8 +158,7 @@ exports.resetPassword = async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   sendTokenCookieResponse(user, 200, res);
-}
-
+};
 
 /**
  * @desc    Update user details
@@ -157,17 +169,16 @@ exports.updateDetails = async (req, res, next) => {
   const fieldsToUpdate = {
     firstName: req.body.firstName,
     lastName: req.body.lastName,
-    email: req.body.email
-  }
+    email: req.body.email,
+  };
 
-  const user =  await User.findByIdAndUpdate(req.user._id, fieldsToUpdate, {
+  const user = await User.findByIdAndUpdate(req.user._id, fieldsToUpdate, {
     new: true,
-    runValidators: true
+    runValidators: true,
   });
 
   res.status(200).json({ success: true, data: user });
-}
-
+};
 
 /**
  * @desc    Update user password
@@ -175,7 +186,7 @@ exports.updateDetails = async (req, res, next) => {
  * @access  Private
  */
 exports.updatePassword = async (req, res, next) => {
-  const user =  await User.findById(req.user._id).select('+password');
+  const user = await User.findById(req.user._id).select('+password');
 
   // Check current password
   if (!(await user.comparePassword(req.body.currentPassword))) {
@@ -186,8 +197,7 @@ exports.updatePassword = async (req, res, next) => {
   await user.save();
 
   sendTokenCookieResponse(user, 200, res);
-}
-
+};
 
 // Helper function for sending encrypted token cookie
 const sendTokenCookieResponse = (user, statusCode, res) => {
@@ -195,14 +205,16 @@ const sendTokenCookieResponse = (user, statusCode, res) => {
   const token = user.getSignedToken();
 
   const options = {
-    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
-    httpOnly: true
-  }
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000,
+    ),
+    httpOnly: true,
+  };
 
-  if (process.env.NODE_ENV === 'production') options.secure = true
+  if (process.env.NODE_ENV === 'production') options.secure = true;
 
   return res.status(statusCode).cookie('token', token, options).json({
     status: 'success',
-    token
+    token,
   });
-}
+};

@@ -5,13 +5,10 @@ const {
   logout,
   currentUser,
   forgotPassword,
-  resetPassword
+  resetPassword,
 } = require('../controllers/auth.controller');
 
-const {
-  protect
-} = require('../middlewares/auth');
-
+const { protect } = require('../middlewares/auth');
 
 router.post('/register', register);
 router.post('/login', login);

@@ -14,12 +14,10 @@ const router = express.Router();
 const PORT = process.env.PORT || 2021;
 const currentVersion = 'v1';
 
-
 app.use(cors());
 app.use(compression()); // Node.js compression middleware
 app.use(express.json()); // For parsing application/json
 app.use(express.urlencoded({ extended: false })); // For parsing application/x-www-form-urlencoded
-
 
 const connectToDatabase = require('./config/db');
 const rootRouter = require('./routes/index')(router);
@@ -28,7 +26,6 @@ const { NotFoundError } = require('./utils/appError');
 
 const isProduction = process.env.NODE_ENV === 'production';
 connectToDatabase();
-
 
 if (!isProduction) {
   // eslint-disable-next-line global-require
@@ -53,7 +50,7 @@ app.get('/', (req, res) => {
 
 app.all('*', () => {
   throw new NotFoundError();
-})
+});
 
 // For handling server errors and all other errors that might occur
 app.use(ErrorHandler);
@@ -67,18 +64,24 @@ if (cluster.isMaster) {
   // Workers can share any TCP connection
   // In this case, it is an HTTP server
   const server = app.listen(PORT, () => {
-    console.log(':>>'.green.bold, 'Server running in'.yellow.bold, process.env.NODE_ENV.toUpperCase().blue.bold, 'mode, on port'.yellow.bold, `${PORT}`.blue.bold);
+    console.log(
+      ':>>'.green.bold,
+      'Server running in'.yellow.bold,
+      process.env.NODE_ENV.toUpperCase().blue.bold,
+      'mode, on port'.yellow.bold,
+      `${PORT}`.blue.bold,
+    );
   });
 
   // Handle uncaught exceptions
-  process.on('uncaughtException', (error) => {
+  process.on('uncaughtException', error => {
     // console.log(error);
     console.log(`✖ | Uncaught Exception: ${error.message}`.red.bold);
     server.close(() => process.exit(1));
   });
-  
+
   // Handle unhandled promise rejections
-  process.on('unhandledRejection', (error) => {
+  process.on('unhandledRejection', error => {
     // console.log(error);
     console.log(`✖ | Unhandled Rejection: ${error.message}`.red.bold);
     server.close(() => process.exit(1));
