@@ -1,15 +1,10 @@
 const mongoose = require('mongoose');
 
 const connectToDatabase = async () => {
-  const { connection } = await mongoose.connect(
-    process.env.NODE_ENV === 'production'
-      ? process.env.DB_URI
-      : process.env.DEV_DB_URI,
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    },
-  );
+  const { connection } = await mongoose.connect(process.env.DB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
 
   // eslint-disable-next-line no-console
   console.log(
