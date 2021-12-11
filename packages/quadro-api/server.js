@@ -75,15 +75,13 @@ if (cluster.isMaster) {
 
   // Handle uncaught exceptions
   process.on('uncaughtException', error => {
-    // console.log(error);
-    console.log(`✖ | Uncaught Exception: ${error.message}`.red.bold);
+    console.error(`✖ | Uncaught Exception: ${error.message}`.red.bold);
     server.close(() => process.exit(1));
   });
 
   // Handle unhandled promise rejections
   process.on('unhandledRejection', error => {
-    // console.log(error);
-    console.log(`✖ | Unhandled Rejection: ${error.message}`.red.bold);
+    console.error(`✖ | Unhandled Rejection: ${error.message}`.red.bold);
     server.close(() => process.exit(1));
   });
 }
