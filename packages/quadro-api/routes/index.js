@@ -1,3 +1,7 @@
-const routes = {};
+const authRouter = require('./auth.route');
 
-export default routes;
+module.exports = router => {
+  router.use('/auth', authRouter);
+
+  return router;
+}
