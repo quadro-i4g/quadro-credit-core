@@ -62,14 +62,15 @@ const calculateCredit = data => {
 
   let score = 0;
   let total = 0;
-  const SCORE_MIN = 0;
-  const SCORE_MAX = 100;
+  const SCORE_MIN = Math.ceil(0);
+  const SCORE_MAX = Math.floor(100);
 
   if (debitAmt > creditAmt) {
-    total = Number((debitAmt - creditAmt) / totalDays).toFixed(0);
+    total = Number(`.${Number((debitAmt - creditAmt) / totalDays).toFixed(0)}`);
   }
 
-  score = clamp(Number(`.${total}`), SCORE_MIN, SCORE_MAX) * 100;
+  // score = clamp(total, SCORE_MIN, SCORE_MAX) * 100;
+  score = Math.floor(Math.random() * (SCORE_MAX - SCORE_MIN) + SCORE_MIN);
 
   return {
     grade: grading(score),
