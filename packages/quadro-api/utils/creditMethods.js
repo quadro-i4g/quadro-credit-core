@@ -12,11 +12,12 @@ const clamp = (value, min, max) => {
 const grading = score => {
   let grade = '';
 
-  if (score >= 300 && score <= 579) grade = 'F';
-  else if (score >= 580 && score <= 669) grade = 'D';
-  else if (score >= 670 && score <= 739) grade = 'C';
-  else if (score >= 740 && score <= 799) grade = 'B';
-  else if (score >= 800 && score <= 850) grade = 'A';
+  if (score >= 0 && score <= 49) grade = 'F';
+  else if (score >= 50 && score <= 59) grade = 'E';
+  else if (score >= 60 && score <= 69) grade = 'D';
+  else if (score >= 70 && score <= 79) grade = 'C';
+  else if (score >= 80 && score <= 89) grade = 'B';
+  else if (score >= 90 && score <= 100) grade = 'A';
   else {
     Error('Invalid score');
     grade = 'N/A';
@@ -61,14 +62,14 @@ const calculateCredit = data => {
 
   let score = 0;
   let total = 0;
-  const SCORE_MIN = 300;
-  const SCORE_MAX = 850;
+  const SCORE_MIN = 0;
+  const SCORE_MAX = 100;
 
   if (debitAmt > creditAmt) {
-    total = ((debitAmt - creditAmt) / totalDays) * 100;
+    total = Number((debitAmt - creditAmt) / totalDays).toFixed(0);
   }
 
-  score = clamp(total, SCORE_MIN, SCORE_MAX);
+  score = clamp(Number(`.${total}`), SCORE_MIN, SCORE_MAX) * 100;
 
   return {
     grade: grading(score),
