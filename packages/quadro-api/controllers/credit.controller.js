@@ -17,7 +17,8 @@ exports.getCreditDataWithCode = async (req, res, next) => {
   try {
     const response = await getMonoId(data.code);
     const statementData = await getMonoStatements(response.data.id);
-    return res.status(200).json(calculateCredit(statementData.data.data));
+    const scores = calculateCredit(statementData.data.data);
+    return res.status(200).json({ scores, id: response.data.id });
   } catch (err) {
     return res.status(400).json({ message: 'An Error Occured' });
   }
@@ -32,7 +33,7 @@ exports.getCreditDataWithID = async (req, res, next) => {
   try {
     const response = await getMonoStatements(req.params.id);
     const scores = calculateCredit(response.data.data);
-    return res.status(200).json(scores);
+    return res.status(200).json({ scores, id: req.params.id });
   } catch (err) {
     return res.status(400).json({ message: 'An Error Occured', err });
   }
