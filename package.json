@@ -9,7 +9,9 @@
   "bugs": {
     "url": "https://github.com/quadro-i4g/quadro-credit-core/issues"
   },
-  "dependencies": {},
+  "dependencies": {
+    "lerna": "^4.0.0"
+  },
   "devDependencies": {
     "concurrently": "^6.4.0",
     "eslint": "^8.4.1",
@@ -19,7 +21,6 @@
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-prettier": "^4.0.0",
     "husky": ">=6",
-    "lerna": "^4.0.0",
     "lint-staged": ">=10",
     "prettier": "^2.5.1",
     "rimraf": "^3.0.2"
