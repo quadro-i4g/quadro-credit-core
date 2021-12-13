@@ -20,7 +20,7 @@ exports.getCreditDataWithCode = async (req, res, next) => {
     const scores = calculateCredit(statementData.data.data);
     return res.status(200).json({ scores, id: response.data.id });
   } catch (err) {
-    return res.status(400).json({ message: 'An Error Occured' });
+    return res.status(400).json(err.response.data);
   }
 };
 
@@ -35,6 +35,6 @@ exports.getCreditDataWithID = async (req, res, next) => {
     const scores = calculateCredit(response.data.data);
     return res.status(200).json({ scores, id: req.params.id });
   } catch (err) {
-    return res.status(400).json({ message: 'An Error Occured', err });
+    return res.status(400).json(err.response.data);
   }
 };
